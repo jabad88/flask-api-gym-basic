@@ -1,13 +1,17 @@
 from flask import Flask, request
-from flask_restful import Resource, Api, marshal_with, fields
-from flask_sqlalchemy import SQLAlchemy
+from flask_restful import Resource, Api, marshal_with
+from db import db
 
+# from models.exercise import Task
+from schemas import task_fields
 
 app = Flask(__name__)
 api = Api(app)
+db.init_app(app)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///gymdb.db"
-db = SQLAlchemy(app)
+with app.app_context():
+    db.create_all()
 
 class Task(db.Model):
     id = db.Column(db.Integer,primary_key=True)
@@ -16,14 +20,11 @@ class Task(db.Model):
     def __repr__(self):
         return self.name
     
+
+
 with app.app_context():
     db.create_all()
 
-
-task_fields = {
-    'id': fields.Integer,
-    'name': fields.String,
-}
 
 class Exercises(Resource):
     @marshal_with(task_fields)
