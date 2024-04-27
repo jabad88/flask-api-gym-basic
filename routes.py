@@ -1,6 +1,6 @@
 #public import
 from flask_restful import marshal_with, Resource
-from flask import request
+from flask import request, jsonify
 
 #local import
 from models import Task
@@ -16,34 +16,38 @@ class Exercises(Resource):
     @marshal_with(task_fields)
     def post(self):
         data = request.json
-        task = Task(name=data["name"])
+        if "name" not in data:
+            return {"message": "Missing required field: 'Name'"}, 400
+        task = Task()
+        task.name = data['name']
         db.session.add(task)
         db.session.commit()
-
-        return data
-
+        return {"id":task.id, "name":task.name}, 201
     
 class Exercise(Resource):
     @marshal_with(task_fields)
     def get(self,pk):
-        exercise = Task.query.filter_by(id=pk).first()
+        exercise = Task.query.get(pk)
+        #TODO: This is not returning the error message. Fix this.
+        if not exercise:
+            return jsonify({"message":"There is no exercise with that ID"}), 404
         return exercise
 
-
+    @marshal_with(task_fields)
     def put(self,pk):
         data = request.json
-
         task = Task.query.filter_by(id=pk).first()
+        if not task:
+            return {"message":"There is no exercise with that ID"}, 404
         task.name = data['name']
         db.session.commit()
         return task
 
-    
+    @marshal_with(task_fields)
     def delete(self,pk):
         task = Task.query.filter_by(id=pk).first()
         db.session.delete(task)
         db.session.commit()
-
         exercises = Task.query.all()
-
         return exercises
+    
