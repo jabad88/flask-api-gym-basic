@@ -19,9 +19,8 @@ class Exercises(Resource):
         task = Task(name=data["name"])
         db.session.add(task)
         db.session.commit()
-        exercises = Task.query.all()
 
-        return exercises
+        return data
 
     
 class Exercise(Resource):
