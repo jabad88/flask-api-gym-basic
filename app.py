@@ -13,6 +13,10 @@ db.init_app(app)
 
 
 # Register API endpoints
+@app.route('/')
+def index():
+    return "<h1>Hello World!</h1>"
+
 api.add_resource(Exercises, '/exercises')
 api.add_resource(Exercise, '/<int:pk>')
 
