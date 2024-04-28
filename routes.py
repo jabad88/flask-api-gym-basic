@@ -30,8 +30,8 @@ class Exercise(Resource):
         exercise = Task.query.filter_by(id=pk).first()
         #TODO: Still returning null on improper id
         if not exercise:
-            return jsonify({"message":"There is no exercise with that ID"}), 404
-        return jsonify(exercise)
+            return {"message":"There is no exercise with that ID"}, 404
+        return exercise.to_dict()
 
     @marshal_with(task_fields)
     def put(self,pk):
