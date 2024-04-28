@@ -27,11 +27,11 @@ class Exercises(Resource):
 class Exercise(Resource):
     @marshal_with(task_fields)
     def get(self,pk):
-        exercise = Task.query.get(pk)
-        #TODO: This is not returning the error message. Fix this.
+        exercise = Task.query.filter_by(id=pk).first()
+        #TODO: Still returning null on improper id
         if not exercise:
             return jsonify({"message":"There is no exercise with that ID"}), 404
-        return exercise
+        return jsonify(exercise)
 
     @marshal_with(task_fields)
     def put(self,pk):
@@ -48,6 +48,5 @@ class Exercise(Resource):
         task = Task.query.filter_by(id=pk).first()
         db.session.delete(task)
         db.session.commit()
-        exercises = Task.query.all()
-        return exercises
+        return jsonify({"message": f"Deleted the exercise with task id {pk}"})
     
